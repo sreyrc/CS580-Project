@@ -13,6 +13,9 @@ namespace BehaviorTree
         private float _speed;
         private float _targetSpeed;
         private float SpeedChangeRate = 10.0f;
+        private float _rotationVelocity;
+        private float _targetRotation;
+        private float RotationSmoothTime = 0.12f;
 
         // animation
         private Animator _animator;
@@ -59,9 +62,6 @@ namespace BehaviorTree
             }
             _animationBlend = Mathf.Lerp(_animationBlend, _targetSpeed, Time.deltaTime * SpeedChangeRate);
 
-            _targetDirection = _targetPosition - _transform.position;
-            _characterController.Move(_targetDirection.normalized * (_speed * Time.deltaTime));
-
             //if (Vector3.Equals(_transform.position, _targetPosition))
             if ((Mathf.Abs(_targetPosition.x - _transform.position.x) < float.Epsilon) &&
                 (Mathf.Abs(_targetPosition.z - _transform.position.z) < float.Epsilon))
@@ -79,6 +79,12 @@ namespace BehaviorTree
             }
             else
             {
+                _targetDirection = (_targetPosition - _transform.position).normalized;
+                _targetRotation = Mathf.Atan2(_targetDirection.x, _targetDirection.z) * Mathf.Rad2Deg;
+                float rotation = Mathf.SmoothDampAngle(_transform.eulerAngles.y, _targetRotation, ref _rotationVelocity, RotationSmoothTime);
+                _transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+                _characterController.Move(_targetDirection * (_speed * Time.deltaTime));
+
                 // update animator if using character
                 if (_hasAnimator)
                 {
