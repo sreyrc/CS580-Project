@@ -63,8 +63,8 @@ namespace BehaviorTree
             _characterController.Move(_targetDirection.normalized * (_speed * Time.deltaTime));
 
             //if (Vector3.Equals(_transform.position, _targetPosition))
-            if ((_transform.position.x > _targetPosition.x - 0.1f && _transform.position.x < _targetPosition.x + 0.1f) &&
-                (_transform.position.z > _targetPosition.z - 0.1f && _transform.position.z < _targetPosition.z + 0.1f))
+            if ((Mathf.Abs(_targetPosition.x - _transform.position.x) < float.Epsilon) &&
+                (Mathf.Abs(_targetPosition.z - _transform.position.z) < float.Epsilon))
             {
                 _characterController.Move(new Vector3(0, 0, 0));
 
