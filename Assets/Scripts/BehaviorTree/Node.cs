@@ -19,7 +19,7 @@ namespace BehaviorTree
         public Node parent;
 
         // List of all the children of this node
-        protected List<Node> children;
+        protected List<Node> children = new List<Node>();
 
         // Shared data stored in this node. This data can be accessed by other nodes in the branch of the tree
         private Dictionary<string, object> _nodeDictionary = new Dictionary<string, object>();
@@ -34,10 +34,13 @@ namespace BehaviorTree
             // Assign parent of these children to this current node
             // and add the children to the list of children
             foreach (Node child in children)
-            {
-                child.parent = this;
-                children.Add(child);
-            }
+                _Attach(child);
+        }
+
+        private void _Attach(Node node)
+        {
+            node.parent = this;
+            children.Add(node);
         }
 
         public virtual NodeState Evaluate() => NodeState.FAILURE;
