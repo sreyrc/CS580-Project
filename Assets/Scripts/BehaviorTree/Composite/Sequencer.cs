@@ -7,6 +7,11 @@ namespace BehaviorTree
         public Sequencer() : base() { }
         public Sequencer(List<Node> children) : base(children) { }
 
+        //public override float Simulate()
+        //{
+            
+        //}
+
         public override NodeState Evaluate()
         {
             bool anyChildIsRunning = false;
