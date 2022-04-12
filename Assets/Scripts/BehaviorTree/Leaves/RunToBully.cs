@@ -26,23 +26,18 @@ namespace BehaviorTree
 
         public override float Simulate()
         {
-            Dictionary<WorldStateVariables, WorldStateVarValues> worldStateDS = Tree._currentWorldState.GetWorldStateDS();
             float cost = 0f;
 
-            //worldState.SetWorldState(WorldStateVariables.BULLYSEENBYMONITOR, WorldStateVarValues.TRUE);
-            WorldStateVarValues temp = worldStateDS[WorldStateVariables.MONITORATBULLYPOS];
-            worldStateDS[WorldStateVariables.MONITORATBULLYPOS] = WorldStateVarValues.TRUE;
+            Tree._currentWorldState.SetWorldState(WorldStateVariables.MONITORATBULLYPOS, WorldStateVarValues.TRUE);
 
             foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in MonitorBT._idealWorldState.GetWorldStateDS())
             {
                 if (entry.Value != WorldStateVarValues.DONTCARE)
                 {
                     // Diff(currentWorldState[key], idealWorldState[key]) * wt[key] + ..... 
-                    cost += Mathf.Abs(entry.Value - worldStateDS[entry.Key]) * MonitorBT._worldStateVariableWeights[entry.Key];
+                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * MonitorBT._worldStateVariableWeights[entry.Key];
                 }
             }
-
-            worldStateDS[WorldStateVariables.MONITORATBULLYPOS] = temp;
 
             return cost;
         }
@@ -74,6 +69,8 @@ namespace BehaviorTree
                     return state;
                 }
             }
+
+            Tree._currentWorldState.SetWorldState(WorldStateVariables.MONITORATBULLYPOS, WorldStateVarValues.FALSE);
 
             state = NodeState.RUNNING;
             return state;

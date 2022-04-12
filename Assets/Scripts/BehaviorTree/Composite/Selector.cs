@@ -12,6 +12,8 @@ namespace BehaviorTree
 
         public override float Simulate()
         {
+            WorldState worldStateCopy = new WorldState(Tree._currentWorldState);
+
             float min = float.MaxValue;
             int minIndex = -1;
 
@@ -24,6 +26,7 @@ namespace BehaviorTree
                     min = cost;
                     minIndex = i;
                 }
+                Tree._currentWorldState.DeepCopy(worldStateCopy);
             }
 
             _minCost = min;
