@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BehaviorTree
 {
-    public class MonitorBT : Tree
+    public class BullyBT : Tree
     {
         public Transform[] waypoints;
         public static float walkSpeed = 2f;
@@ -14,11 +14,6 @@ namespace BehaviorTree
         {
             Node root = new Selector(new List<Node>
             {
-                new Sequencer(new List<Node>
-                {
-                    new CheckBullyInFOVRange(transform),
-                    new RunToBully(transform),
-                }),
                 new Patrol(transform, waypoints),
             });
 

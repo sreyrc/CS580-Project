@@ -44,7 +44,7 @@ namespace BehaviorTree
             }
             else
             {
-                _animationBlend = Mathf.Lerp(_animationBlend, MonitorBT.speed, Time.deltaTime * SpeedChangeRate);
+                _animationBlend = Mathf.Lerp(_animationBlend, MonitorBT.walkSpeed, Time.deltaTime * SpeedChangeRate);
 
                 Transform wp = _waypoints[_currentWaypointIndex];
                 if (Vector3.Distance(_transform.position, wp.position) < 0.01f)
@@ -57,7 +57,7 @@ namespace BehaviorTree
                 }
                 else
                 {
-                    _transform.position = Vector3.MoveTowards(_transform.position, wp.position, MonitorBT.speed * Time.deltaTime);
+                    _transform.position = Vector3.MoveTowards(_transform.position, wp.position, MonitorBT.walkSpeed * Time.deltaTime);
                     _transform.LookAt(wp.position);
 
                     _animator.SetFloat(_animIDSpeed, _animationBlend);
