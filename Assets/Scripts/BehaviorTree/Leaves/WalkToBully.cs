@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BehaviorTree
 {
-    public class GoToBully : Node
+    public class WalkToBully : Node
     {
         private Transform _transform;
 
@@ -14,7 +14,7 @@ namespace BehaviorTree
         private float _animationBlend;
         private float SpeedChangeRate = 10.0f;
 
-        public GoToBully(Transform transform)
+        public WalkToBully(Transform transform)
         {
             _transform = transform;
 
@@ -27,11 +27,11 @@ namespace BehaviorTree
         {
             Transform target = (Transform)GetData("bully");
 
-            _animationBlend = Mathf.Lerp(_animationBlend, MonitorBT.speed, Time.deltaTime * SpeedChangeRate);
+            _animationBlend = Mathf.Lerp(_animationBlend, MonitorBT.walkSpeed, Time.deltaTime * SpeedChangeRate);
 
             if (Vector3.Distance(_transform.position, target.position) > 0.01f)
             {
-                _transform.position = Vector3.MoveTowards(_transform.position, target.position, MonitorBT.speed * Time.deltaTime);
+                _transform.position = Vector3.MoveTowards(_transform.position, target.position, MonitorBT.walkSpeed * Time.deltaTime);
                 _transform.LookAt(target.position);
 
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
