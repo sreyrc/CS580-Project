@@ -15,22 +15,19 @@ namespace BehaviorTree
         }
         public override float Simulate()
         {
-            Dictionary<WorldStateVariables, WorldStateVarValues> worldStateDS = Tree._currentWorldState.GetWorldStateDS();
             float cost = 0f;
 
-            //worldState.SetWorldState(WorldStateVariables.BULLYSEENBYMONITOR, WorldStateVarValues.TRUE);
-            WorldStateVarValues temp = worldStateDS[WorldStateVariables.BULLYSEENBYMONITOR];
-            worldStateDS[WorldStateVariables.BULLYSEENBYMONITOR] = WorldStateVarValues.TRUE;
+            Tree._currentWorldState.SetWorldState(WorldStateVariables.BULLYSEENBYMONITOR, WorldStateVarValues.TRUE);
 
             foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in MonitorBT._idealWorldState.GetWorldStateDS())
             {
                 if (entry.Value != WorldStateVarValues.DONTCARE)
                 {
                     // Diff(currentWorldState[key], idealWorldState[key]) * wt[key] + ..... 
-                    cost += Mathf.Abs(entry.Value - worldStateDS[entry.Key]) * MonitorBT._worldStateVariableWeights[entry.Key];
+                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * MonitorBT._worldStateVariableWeights[entry.Key];
                 }
             }
-            worldStateDS[WorldStateVariables.BULLYSEENBYMONITOR] = temp;
+            
             return cost;
         }
         public override NodeState Evaluate()
@@ -46,13 +43,15 @@ namespace BehaviorTree
                 if (colliders.Length > 0)
                 {
                     parent.SetData("bully", colliders[0].transform);
-
                     Tree._currentWorldState.SetWorldState(WorldStateVariables.BULLYSEENBYMONITOR, WorldStateVarValues.TRUE);
+
                     state = NodeState.SUCCESS;
                     return state;
                 }
 
                 parent.SetData("bully", null);
+                Tree._currentWorldState.SetWorldState(WorldStateVariables.BULLYSEENBYMONITOR, WorldStateVarValues.FALSE);
+
                 state = NodeState.FAILURE;
                 return state;
             }

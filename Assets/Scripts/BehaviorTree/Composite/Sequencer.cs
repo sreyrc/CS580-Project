@@ -7,10 +7,21 @@ namespace BehaviorTree
         public Sequencer() : base() { }
         public Sequencer(List<Node> children) : base(children) { }
 
-        //public override float Simulate()
-        //{
-            
-        //}
+        public override float Simulate()
+        {
+            WorldState worldStateCopy = new WorldState(Tree._currentWorldState);
+
+            float cost = 0f;
+
+            foreach (Node child in children)
+            {
+                cost += child.Simulate();
+            }
+
+            Tree._currentWorldState.DeepCopy(worldStateCopy);
+
+            return cost;
+        }
 
         public override NodeState Evaluate()
         {

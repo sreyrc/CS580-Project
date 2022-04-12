@@ -30,19 +30,14 @@ namespace BehaviorTree
             _worldStateVariableWeights.Add(WorldStateVariables.KIDATCAFE, 3.0f);
 
             // Setup Monitor BT
-            //Node root = new Selector(new List<Node>
-            //{
-            //    new Sequencer(new List<Node>
-            //    {
-            //        new CheckBullyInFOVRange(transform),
-            //        new RunToBully(transform),
-            //    }),
-            //    new Patrol(transform, waypoints),
-            //});
             Node root = new Selector(new List<Node>
             {
-                new CheckBullyInFOVRange(transform),
-                new RunToBully(transform),
+                new Sequencer(new List<Node>
+                {
+                    new CheckBullyInFOVRange(transform),
+                    new RunToBully(transform),
+                }),
+                new Patrol(transform, waypoints),
             });
 
             return root;

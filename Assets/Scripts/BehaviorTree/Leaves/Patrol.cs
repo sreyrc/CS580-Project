@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace BehaviorTree
@@ -29,6 +29,22 @@ namespace BehaviorTree
             _animator = transform.GetComponent<Animator>();
             _animIDSpeed = Animator.StringToHash("Speed");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+        }
+
+        public override float Simulate()
+        {
+            float cost = 0f;
+
+            foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in MonitorBT._idealWorldState.GetWorldStateDS())
+            {
+                if (entry.Value != WorldStateVarValues.DONTCARE)
+                {
+                    // Diff(currentWorldState[key], idealWorldState[key]) * wt[key] + ..... 
+                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * MonitorBT._worldStateVariableWeights[entry.Key];
+                }
+            }
+
+            return cost;
         }
 
         public override NodeState Evaluate()
