@@ -26,11 +26,13 @@ namespace BehaviorTree
 
         public Node()
         {
+            state = NodeState.SUCCESS;
             parent = null;
         }
 
         public Node(List<Node> children)
         {
+            state = NodeState.SUCCESS;
             // Assign parent of these children to this current node
             // and add the children to the list of children
             foreach (Node child in children)
@@ -44,6 +46,13 @@ namespace BehaviorTree
         }
 
         public virtual NodeState Evaluate() => NodeState.FAILURE;
+
+        public virtual float Simulate() => 0.0f;
+
+        public NodeState GetState()
+        {
+            return state;
+        }
 
         public void SetData(string key, object value)
         {
