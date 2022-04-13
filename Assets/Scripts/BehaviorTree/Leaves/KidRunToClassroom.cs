@@ -1,13 +1,15 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BehaviorTree
 {
-    public class RunToRandomPos : Node
+    public class KidRunToClassroom : Node
     {
         private Transform _transform;
-        private Vector3 _targetPosition;
+        private Vector3 _target;
+        WorldState _idealWorldState;
+        Dictionary<WorldStateVariables, float> _weights;
 
         // Animation
         private Animator _animator;
@@ -16,10 +18,10 @@ namespace BehaviorTree
         private float _animationBlend;
         private float SpeedChangeRate = 10.0f;
 
-        public RunToRandomPos(Transform transform)
+        public KidRunToClassroom(Transform transform)
         {
             _transform = transform;
-            _targetPosition = new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20));
+            _target = new Vector3(15f, 0f, 4.5f);
 
             _animator = transform.GetComponent<Animator>();
             _animIDSpeed = Animator.StringToHash("Speed");
@@ -28,7 +30,12 @@ namespace BehaviorTree
 
         public override float Simulate(WorldState idealWorldState, Dictionary<WorldStateVariables, float> weights)
         {
+            _idealWorldState = idealWorldState;
+            _weights = weights;
+
             float cost = 0f;
+
+            Tree._currentWorldState.SetWorldState(WorldStateVariables.KIDATCLASSROOM, WorldStateVarValues.TRUE);
 
             foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in idealWorldState.GetWorldStateDS())
             {
@@ -44,29 +51,35 @@ namespace BehaviorTree
 
         public override NodeState Evaluate()
         {
-            _animationBlend = Mathf.Lerp(_animationBlend, 2.35f, Time.deltaTime * SpeedChangeRate);
+            _animationBlend = Mathf.Lerp(_animationBlend, StudentBT.runSpeed, Time.deltaTime * SpeedChangeRate);
 
-            if (Vector3.Distance(_transform.position, _targetPosition) > 0.01f)
+            if (Vector3.Distance(_transform.position, _target) > 0.5f)
             {
-                _transform.position = Vector3.MoveTowards(_transform.position, _targetPosition, 2.35f * Time.deltaTime);
-                _transform.LookAt(_targetPosition);
+                _transform.position = Vector3.MoveTowards(_transform.position, _target, StudentBT.runSpeed * Time.deltaTime);
+                _transform.LookAt(_target);
 
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, 1f);
+
+                state = NodeState.FAILURE;
+                return state;
             }
             else
             {
-                _targetPosition = new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20));
-
                 _animator.SetFloat(_animIDSpeed, 0f);
                 _animator.SetFloat(_animIDMotionSpeed, 0f);
+
+                Tree._currentWorldState.SetWorldState(WorldStateVariables.KIDATCAFE, WorldStateVarValues.TRUE);
+
+                _idealWorldState.SetWorldState(WorldStateVariables.KIDATCAFE, WorldStateVarValues.TRUE);
+                _idealWorldState.SetWorldState(WorldStateVariables.KIDATCLASSROOM, WorldStateVarValues.FALSE);
+
+                _weights[WorldStateVariables.KIDATCAFE] = 2f;
+                _weights[WorldStateVariables.KIDATCLASSROOM] = 1f;
 
                 state = NodeState.SUCCESS;
                 return state;
             }
-
-            state = NodeState.RUNNING;
-            return state;
         }
     }
 }
