@@ -1,10 +1,10 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BehaviorTree
 {
-    public class RunToBully : Node
+    public class MonitorRunToKid : Node
     {
         private Transform _transform;
 
@@ -15,7 +15,7 @@ namespace BehaviorTree
         private float _animationBlend;
         private float SpeedChangeRate = 10.0f;
 
-        public RunToBully(Transform transform)
+        public MonitorRunToKid(Transform transform)
         {
             _transform = transform;
 
@@ -28,7 +28,7 @@ namespace BehaviorTree
         {
             float cost = 0f;
 
-            Tree._currentWorldState.SetWorldState(WorldStateVariables.MONITORATBULLYPOS, WorldStateVarValues.TRUE);
+            Tree._currentWorldState.SetWorldState(WorldStateVariables.MONITORATKIDPOS, WorldStateVarValues.TRUE);
 
             foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in MonitorBT._idealWorldState.GetWorldStateDS())
             {
@@ -44,7 +44,7 @@ namespace BehaviorTree
 
         public override NodeState Evaluate()
         {
-            Transform target = (Transform)GetData("bully");
+            Transform target = (Transform)GetData("student");
 
             _animationBlend = Mathf.Lerp(_animationBlend, MonitorBT.runSpeed, Time.deltaTime * SpeedChangeRate);
 
@@ -63,14 +63,12 @@ namespace BehaviorTree
                     _animator.SetFloat(_animIDSpeed, 0f);
                     _animator.SetFloat(_animIDMotionSpeed, 0f);
 
-                    Tree._currentWorldState.SetWorldState(WorldStateVariables.MONITORATBULLYPOS, WorldStateVarValues.TRUE);
+                    Tree._currentWorldState.SetWorldState(WorldStateVariables.MONITORATKIDPOS, WorldStateVarValues.TRUE);
 
                     state = NodeState.SUCCESS;
                     return state;
                 }
             }
-
-            Tree._currentWorldState.SetWorldState(WorldStateVariables.MONITORATBULLYPOS, WorldStateVarValues.FALSE);
 
             state = NodeState.RUNNING;
             return state;

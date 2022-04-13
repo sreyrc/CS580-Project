@@ -18,10 +18,15 @@ namespace BehaviorTree
 
             // Setup Initial world state
             _currentWorldState.SetWorldState(WorldStateVariables.BULLYATKIDPOS, WorldStateVarValues.FALSE);
-            _currentWorldState.SetWorldState(WorldStateVariables.KIDBEATENUP, WorldStateVarValues.FALSE);
             _currentWorldState.SetWorldState(WorldStateVariables.BULLYSEENBYMONITOR, WorldStateVarValues.FALSE);
+            _currentWorldState.SetWorldState(WorldStateVariables.BULLYPUNISHED, WorldStateVarValues.FALSE);
             _currentWorldState.SetWorldState(WorldStateVariables.MONITORATBULLYPOS, WorldStateVarValues.FALSE);
+            _currentWorldState.SetWorldState(WorldStateVariables.MONITORATKIDPOS, WorldStateVarValues.FALSE);
             _currentWorldState.SetWorldState(WorldStateVariables.KIDATCAFE, WorldStateVarValues.FALSE);
+            _currentWorldState.SetWorldState(WorldStateVariables.KIDBEATENUP, WorldStateVarValues.FALSE);
+            _currentWorldState.SetWorldState(WorldStateVariables.KIDATCLASSROOM, WorldStateVarValues.TRUE);
+            _currentWorldState.SetWorldState(WorldStateVariables.KIDSEENBYMONITOR, WorldStateVarValues.FALSE);
+            _currentWorldState.SetWorldState(WorldStateVariables.KIDSEENBYBULLY, WorldStateVarValues.FALSE);
         }
 
         private void Update()
