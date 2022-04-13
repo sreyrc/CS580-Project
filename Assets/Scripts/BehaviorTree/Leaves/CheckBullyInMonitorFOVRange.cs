@@ -4,12 +4,12 @@ using UnityEngine;
 
 namespace BehaviorTree
 {
-    public class CheckBullyInFOVRange : Node
+    public class CheckBullyInMonitorFOVRange : Node
     {
-        private static int _bullyLayerMask = 1 << 6;
+        private static int _agentLayerMask = 1 << 6;
         private Transform _transform;
 
-        public CheckBullyInFOVRange(Transform transform)
+        public CheckBullyInMonitorFOVRange(Transform transform)
         {
             _transform = transform;
         }
@@ -38,7 +38,7 @@ namespace BehaviorTree
                 Collider[] colliders = Physics.OverlapSphere(
                     _transform.position,
                     MonitorBT.fovRange,
-                    _bullyLayerMask);
+                    _agentLayerMask);
 
                 if (colliders.Length > 0)
                 {

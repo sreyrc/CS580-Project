@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BehaviorTree
 {
-    public class RunToBully : Node
+    public class MonitorRunToBully : Node
     {
         private Transform _transform;
 
@@ -15,7 +15,7 @@ namespace BehaviorTree
         private float _animationBlend;
         private float SpeedChangeRate = 10.0f;
 
-        public RunToBully(Transform transform)
+        public MonitorRunToBully(Transform transform)
         {
             _transform = transform;
 
@@ -50,7 +50,7 @@ namespace BehaviorTree
 
             if (target != null)
             {
-                if (Vector3.Distance(_transform.position, target.position) > 0.01f)
+                if (Vector3.Distance(_transform.position, target.position) > 0.5f)
                 {
                     _transform.position = Vector3.MoveTowards(_transform.position, target.position, MonitorBT.runSpeed * Time.deltaTime);
                     _transform.LookAt(target.position);
@@ -69,8 +69,6 @@ namespace BehaviorTree
                     return state;
                 }
             }
-
-            Tree._currentWorldState.SetWorldState(WorldStateVariables.MONITORATBULLYPOS, WorldStateVarValues.FALSE);
 
             state = NodeState.RUNNING;
             return state;
