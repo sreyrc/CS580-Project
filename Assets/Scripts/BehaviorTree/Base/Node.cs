@@ -47,7 +47,7 @@ namespace BehaviorTree
 
         public virtual NodeState Evaluate() => NodeState.FAILURE;
 
-        public virtual float Simulate() => 0.0f;
+        public virtual float Simulate(WorldState idealWorldState, Dictionary<WorldStateVariables, float> weights) => 0.0f;
 
         public NodeState GetState()
         {

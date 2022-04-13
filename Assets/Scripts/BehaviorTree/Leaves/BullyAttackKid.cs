@@ -1,34 +1,36 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BehaviorTree
 {
-    public class RunToRandomPos : Node
+    public class BullyAttackKid : Node
     {
         private Transform _transform;
-        private Vector3 _targetPosition;
+        private float _time;
 
         // Animation
         private Animator _animator;
         private int _animIDSpeed;
         private int _animIDMotionSpeed;
-        private float _animationBlend;
-        private float SpeedChangeRate = 10.0f;
+        private int _animIDJump;
 
-        public RunToRandomPos(Transform transform)
+        public BullyAttackKid(Transform transform)
         {
             _transform = transform;
-            _targetPosition = new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20));
+            _time = 2f;
 
             _animator = transform.GetComponent<Animator>();
             _animIDSpeed = Animator.StringToHash("Speed");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDJump = Animator.StringToHash("Jump");
         }
 
         public override float Simulate(WorldState idealWorldState, Dictionary<WorldStateVariables, float> weights)
         {
             float cost = 0f;
+
+            Tree._currentWorldState.SetWorldState(WorldStateVariables.KIDBEATENUP, WorldStateVarValues.TRUE);
 
             foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in idealWorldState.GetWorldStateDS())
             {
@@ -44,26 +46,25 @@ namespace BehaviorTree
 
         public override NodeState Evaluate()
         {
-            _animationBlend = Mathf.Lerp(_animationBlend, 2.35f, Time.deltaTime * SpeedChangeRate);
-
-            if (Vector3.Distance(_transform.position, _targetPosition) > 0.01f)
+            if (_time <= 0f)
             {
-                _transform.position = Vector3.MoveTowards(_transform.position, _targetPosition, 2.35f * Time.deltaTime);
-                _transform.LookAt(_targetPosition);
+                _time = 2f;
 
-                _animator.SetFloat(_animIDSpeed, _animationBlend);
-                _animator.SetFloat(_animIDMotionSpeed, 1f);
-            }
-            else
-            {
-                _targetPosition = new Vector3(Random.Range(-20, 20), 0, Random.Range(-20, 20));
+                Tree._currentWorldState.SetWorldState(WorldStateVariables.KIDBEATENUP, WorldStateVarValues.TRUE);
 
-                _animator.SetFloat(_animIDSpeed, 0f);
-                _animator.SetFloat(_animIDMotionSpeed, 0f);
+                //_animator.SetBool(_animIDJump, false);
+                //_animator.SetFloat(_animIDSpeed, 0f);
+                //_animator.SetFloat(_animIDMotionSpeed, 0f);
 
                 state = NodeState.SUCCESS;
                 return state;
             }
+
+            //_animator.SetBool(_animIDJump, true);
+            _animator.SetFloat(_animIDSpeed, 0f);
+            _animator.SetFloat(_animIDMotionSpeed, 0f);
+
+            _time -= Time.deltaTime;
 
             state = NodeState.RUNNING;
             return state;

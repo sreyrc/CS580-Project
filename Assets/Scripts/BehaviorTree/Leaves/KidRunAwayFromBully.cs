@@ -7,6 +7,8 @@ namespace BehaviorTree
     public class KidRunAwayFromBully : Node
     {
         private Transform _transform;
+        private float _time;
+        private static int _bullyLayerMask = 1 << 6;
 
         // Animation
         private Animator _animator;
@@ -17,25 +19,27 @@ namespace BehaviorTree
 
         public KidRunAwayFromBully(Transform transform)
         {
-            _transform = transform;    
+            _transform = transform;
+            _time = 2f;
 
             _animator = transform.GetComponent<Animator>();
             _animIDSpeed = Animator.StringToHash("Speed");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
 
-        public override float Simulate()
+        public override float Simulate(WorldState idealWorldState, Dictionary<WorldStateVariables, float> weights)
         {
             float cost = 0f;
 
             Tree._currentWorldState.SetWorldState(WorldStateVariables.KIDBEATENUP, WorldStateVarValues.FALSE);
+            Tree._currentWorldState.SetWorldState(WorldStateVariables.BULLYATKIDPOS, WorldStateVarValues.FALSE);
 
-            foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in StudentBT._idealWorldState.GetWorldStateDS())
+            foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in idealWorldState.GetWorldStateDS())
             {
                 if (entry.Value != WorldStateVarValues.DONTCARE)
                 {
                     // Diff(currentWorldState[key], idealWorldState[key]) * wt[key] + ..... 
-                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * StudentBT._worldStateVariableWeights[entry.Key];
+                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * weights[entry.Key];
                 }
             }
 
@@ -44,38 +48,65 @@ namespace BehaviorTree
 
         public override NodeState Evaluate()
         {
-            Transform bullyTransform = (Transform)GetData("bully");
+            Collider[] colliders = Physics.OverlapSphere(
+                _transform.position,
+                6f,
+                _bullyLayerMask);
 
-            _animationBlend = Mathf.Lerp(_animationBlend, StudentBT.runSpeed, Time.deltaTime * SpeedChangeRate);
-
-            if (bullyTransform != null)
+            if (colliders.Length > 0)
             {
-                Vector3 runDirection = (_transform.position - bullyTransform.position).normalized;
-                Vector3 runTargetPos = _transform.position + 50 * runDirection;
+                Transform bullyTransform = colliders[0].transform;
 
-                // Kid is far enough away from bully
-                if (Vector3.Distance(_transform.position, bullyTransform.position) > 8f)
+                if (_time <= 0f)
                 {
-                    _animator.SetFloat(_animIDSpeed, 0f);
-                    _animator.SetFloat(_animIDMotionSpeed, 0f);
+                    _animationBlend = Mathf.Lerp(_animationBlend, StudentBT.runSpeed, Time.deltaTime * SpeedChangeRate);
 
-                    Tree._currentWorldState.SetWorldState(WorldStateVariables.KIDBEATENUP, WorldStateVarValues.FALSE);
-                    Tree._currentWorldState.SetWorldState(WorldStateVariables.BULLYATKIDPOS, WorldStateVarValues.FALSE);
+                    if (bullyTransform != null)
+                    {
+                        Vector3 runDirection = (_transform.position - bullyTransform.position).normalized;
+                        Vector3 runTargetPos = _transform.position + 50f * runDirection;
 
-                    state = NodeState.SUCCESS;
-                    return state;
+                        // Kid is far enough away from bully
+                        if (Vector3.Distance(_transform.position, bullyTransform.position) > 8f)
+                        {
+                            _time = 2f;
+
+                            _animator.SetFloat(_animIDSpeed, 0f);
+                            _animator.SetFloat(_animIDMotionSpeed, 0f);
+
+                            Tree._currentWorldState.SetWorldState(WorldStateVariables.KIDBEATENUP, WorldStateVarValues.FALSE);
+                            Tree._currentWorldState.SetWorldState(WorldStateVariables.BULLYATKIDPOS, WorldStateVarValues.FALSE);
+
+                            state = NodeState.SUCCESS;
+                            return state;
+                        }
+                        else
+                        {
+                            _transform.position = Vector3.MoveTowards(_transform.position, runTargetPos, StudentBT.runSpeed * Time.deltaTime);
+                            _transform.LookAt(runTargetPos);
+
+                            _animator.SetFloat(_animIDSpeed, _animationBlend);
+                            _animator.SetFloat(_animIDMotionSpeed, 1f);
+
+                            state = NodeState.RUNNING;
+                            return state;
+                        }
+                    }
+                    else
+                    {
+                        state = NodeState.FAILURE;
+                        return state;
+                    }
                 }
-                else
-                {
-                    _transform.position = Vector3.MoveTowards(_transform.position, runTargetPos, StudentBT.runSpeed * Time.deltaTime);
-                    _transform.LookAt(runTargetPos);
 
-                    _animator.SetFloat(_animIDSpeed, _animationBlend);
-                    _animator.SetFloat(_animIDMotionSpeed, 1f);
-                }
+                _time -= Time.deltaTime;
+
+                state = NodeState.RUNNING;
+                return state;
             }
 
-            state = NodeState.RUNNING;
+            _time = 2f;
+            state = NodeState.SUCCESS;
             return state;
         }
     }

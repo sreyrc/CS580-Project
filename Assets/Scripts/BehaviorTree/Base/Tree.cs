@@ -11,10 +11,16 @@ namespace BehaviorTree
         // stores global world variables and states - shared by all agents/trees
         public static WorldState _currentWorldState;
 
+        public WorldState _idealWorldState;
+
+        public Dictionary<WorldStateVariables, float> _worldStateVariableWeights;
+
         protected void Start()
         {
-            _root = SetupTree();
             _currentWorldState  = new WorldState();
+            _idealWorldState = new WorldState();
+            _worldStateVariableWeights = new Dictionary<WorldStateVariables, float>();
+            _root = SetupTree();
 
             // Setup Initial world state
             _currentWorldState.SetWorldState(WorldStateVariables.BULLYATKIDPOS, WorldStateVarValues.FALSE);
@@ -33,10 +39,10 @@ namespace BehaviorTree
         {
             if (_root != null)
             {
-                if (_root.GetState() != NodeState.RUNNING)
-                {
-                    _root.Simulate();
-                }
+                //if (_root.GetState() != NodeState.RUNNING)
+                //{
+                //}
+                _root.Simulate(_idealWorldState, _worldStateVariableWeights);
                 _root.Evaluate();
             }
         }

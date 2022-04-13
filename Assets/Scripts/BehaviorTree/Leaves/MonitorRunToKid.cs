@@ -24,18 +24,18 @@ namespace BehaviorTree
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
 
-        public override float Simulate()
+        public override float Simulate(WorldState idealWorldState, Dictionary<WorldStateVariables, float> weights)
         {
             float cost = 0f;
 
             Tree._currentWorldState.SetWorldState(WorldStateVariables.MONITORATKIDPOS, WorldStateVarValues.TRUE);
 
-            foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in MonitorBT._idealWorldState.GetWorldStateDS())
+            foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in idealWorldState.GetWorldStateDS())
             {
                 if (entry.Value != WorldStateVarValues.DONTCARE)
                 {
                     // Diff(currentWorldState[key], idealWorldState[key]) * wt[key] + ..... 
-                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * MonitorBT._worldStateVariableWeights[entry.Key];
+                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * weights[entry.Key];
                 }
             }
 
@@ -57,6 +57,9 @@ namespace BehaviorTree
 
                     _animator.SetFloat(_animIDSpeed, _animationBlend);
                     _animator.SetFloat(_animIDMotionSpeed, 1f);
+
+                    state = NodeState.FAILURE;
+                    return state;
                 }
                 else
                 {
@@ -70,7 +73,7 @@ namespace BehaviorTree
                 }
             }
 
-            state = NodeState.RUNNING;
+            state = NodeState.FAILURE;
             return state;
         }
     }
