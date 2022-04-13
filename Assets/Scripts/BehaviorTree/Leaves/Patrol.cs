@@ -31,16 +31,16 @@ namespace BehaviorTree
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
 
-        public override float Simulate()
+        public override float Simulate(WorldState idealWorldState, WorldStateWeights weights)
         {
             float cost = 0f;
 
-            foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in MonitorBT._idealWorldState.GetWorldStateDS())
+            foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in idealWorldState.GetWorldStateDS())
             {
                 if (entry.Value != WorldStateVarValues.DONTCARE)
                 {
                     // Diff(currentWorldState[key], idealWorldState[key]) * wt[key] + ..... 
-                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * MonitorBT._worldStateVariableWeights[entry.Key];
+                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * weights.GetWorldStateWeight(entry.Key);
                 }
             }
 

@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BehaviorTree
 {
-    public class BullyBT : Tree
+    public class StudentBT : Tree
     {
         public static float walkSpeed = 1f;
         public static float runSpeed = 2.35f;
@@ -15,7 +15,7 @@ namespace BehaviorTree
 
             // weights or importance of each world state variable for this agent
 
-            // Setup BullyBT
+            // Setup Student BT
             Node root = new Sequencer(new List<Node>
             {
                 new Idle(transform, 5.0f),

@@ -5,10 +5,15 @@ using UnityEngine;
 public enum WorldStateVariables
 {
     BULLYATKIDPOS,
-    KIDBEATENUP,
     BULLYSEENBYMONITOR,
+    BULLYPUNISHED,
     MONITORATBULLYPOS,
+    MONITORATKIDPOS,
+    KIDBEATENUP,
+    KIDSEENBYBULLY,
+    KIDSEENBYMONITOR,
     KIDATCAFE,
+    KIDATCLASSROOM,
     COUNT
 }
 
@@ -27,10 +32,15 @@ public class WorldState
     {
         _worldState = new Dictionary<WorldStateVariables, WorldStateVarValues>();
         _worldState[WorldStateVariables.BULLYATKIDPOS] = WorldStateVarValues.DONTCARE;
-        _worldState[WorldStateVariables.KIDBEATENUP] = WorldStateVarValues.DONTCARE;
         _worldState[WorldStateVariables.BULLYSEENBYMONITOR] = WorldStateVarValues.DONTCARE;
+        _worldState[WorldStateVariables.BULLYPUNISHED] = WorldStateVarValues.DONTCARE;
         _worldState[WorldStateVariables.MONITORATBULLYPOS] = WorldStateVarValues.DONTCARE;
+        _worldState[WorldStateVariables.MONITORATKIDPOS] = WorldStateVarValues.DONTCARE;
+        _worldState[WorldStateVariables.KIDBEATENUP] = WorldStateVarValues.DONTCARE;
+        _worldState[WorldStateVariables.KIDSEENBYBULLY] = WorldStateVarValues.DONTCARE;
+        _worldState[WorldStateVariables.KIDSEENBYMONITOR] = WorldStateVarValues.DONTCARE;
         _worldState[WorldStateVariables.KIDATCAFE] = WorldStateVarValues.DONTCARE;
+        _worldState[WorldStateVariables.KIDATCLASSROOM] = WorldStateVarValues.DONTCARE;
     }
 
     public WorldState(WorldState ws)

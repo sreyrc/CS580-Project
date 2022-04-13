@@ -4,27 +4,28 @@ using UnityEngine;
 
 namespace BehaviorTree
 {
-    public class CheckBullyInFOVRange : Node
+    public class CheckBullyInMonitorFOVRange : Node
     {
         private static int _bullyLayerMask = 1 << 6;
         private Transform _transform;
 
-        public CheckBullyInFOVRange(Transform transform)
+        public CheckBullyInMonitorFOVRange(Transform transform)
         {
             _transform = transform;
         }
-        public override float Simulate()
+
+        public override float Simulate(WorldState idealWorldState, WorldStateWeights weights)
         {
             float cost = 0f;
 
             Tree._currentWorldState.SetWorldState(WorldStateVariables.BULLYSEENBYMONITOR, WorldStateVarValues.TRUE);
 
-            foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in MonitorBT._idealWorldState.GetWorldStateDS())
+            foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in idealWorldState.GetWorldStateDS())
             {
                 if (entry.Value != WorldStateVarValues.DONTCARE)
                 {
                     // Diff(currentWorldState[key], idealWorldState[key]) * wt[key] + ..... 
-                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * MonitorBT._worldStateVariableWeights[entry.Key];
+                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * weights.GetWorldStateWeight(entry.Key);
                 }
             }
             
@@ -51,12 +52,9 @@ namespace BehaviorTree
 
                 parent.SetData("bully", null);
                 Tree._currentWorldState.SetWorldState(WorldStateVariables.BULLYSEENBYMONITOR, WorldStateVarValues.FALSE);
-
-                state = NodeState.FAILURE;
-                return state;
             }
 
-            state = NodeState.SUCCESS;
+            state = NodeState.FAILURE;
             return state;
         }
     }
