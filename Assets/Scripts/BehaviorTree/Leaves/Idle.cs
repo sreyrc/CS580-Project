@@ -4,33 +4,29 @@ using UnityEngine;
 
 namespace BehaviorTree
 {
-    public class BullyAttackKid : Node
+    public class Idle : Node
     {
-        private Transform _transform;
+        private float _delay;
         private float _time;
 
         // Animation
         private Animator _animator;
         private int _animIDSpeed;
         private int _animIDMotionSpeed;
-        private int _animIDJump;
 
-        public BullyAttackKid(Transform transform)
+        public Idle(Transform transform, float delay): base()
         {
-            _transform = transform;
-            _time = 2f;
+            _delay = delay;
+            _time = _delay;
 
             _animator = transform.GetComponent<Animator>();
             _animIDSpeed = Animator.StringToHash("Speed");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-            _animIDJump = Animator.StringToHash("Jump");
         }
 
         public override float Simulate(WorldState idealWorldState, WorldStateWeights weights)
         {
             float cost = 0f;
-
-            Tree._currentWorldState.SetWorldState(WorldStateVariables.KIDBEATENUP, WorldStateVarValues.TRUE);
 
             foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in idealWorldState.GetWorldStateDS())
             {
@@ -48,23 +44,16 @@ namespace BehaviorTree
         {
             if (_time <= 0f)
             {
-                _time = 2f;
-
-                Tree._currentWorldState.SetWorldState(WorldStateVariables.KIDBEATENUP, WorldStateVarValues.TRUE);
-
-                //_animator.SetBool(_animIDJump, false);
-                //_animator.SetFloat(_animIDSpeed, 0f);
-                //_animator.SetFloat(_animIDMotionSpeed, 0f);
+                _time = _delay;
 
                 state = NodeState.SUCCESS;
                 return state;
             }
+            
+            _time -= Time.deltaTime;
 
-            //_animator.SetBool(_animIDJump, true);
             _animator.SetFloat(_animIDSpeed, 0f);
             _animator.SetFloat(_animIDMotionSpeed, 0f);
-
-            _time -= Time.deltaTime;
 
             state = NodeState.RUNNING;
             return state;

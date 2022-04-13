@@ -9,7 +9,7 @@ namespace BehaviorTree
         public Sequencer() : base() { }
         public Sequencer(List<Node> children) : base(children) { }
 
-        public override float Simulate(WorldState idealWorldState, Dictionary<WorldStateVariables, float> weights)
+        public override float Simulate(WorldState idealWorldState, WorldStateWeights weights)
         {
             WorldState worldStateCopy = new WorldState(Tree._currentWorldState);
 

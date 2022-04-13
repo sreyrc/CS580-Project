@@ -5,10 +5,9 @@ namespace BehaviorTree
 {
     public class MonitorBT : Tree
     {
-        public Transform[] waypoints;
         public static float walkSpeed = 1f;
         public static float runSpeed = 2.35f;
-        public static float fovRange = 6f;
+        public static float fovRange = 10f;
 
         protected override Node SetupTree()
         {
@@ -17,28 +16,26 @@ namespace BehaviorTree
             _idealWorldState.SetWorldState(WorldStateVariables.MONITORATBULLYPOS, WorldStateVarValues.TRUE);
             _idealWorldState.SetWorldState(WorldStateVariables.KIDSEENBYMONITOR, WorldStateVarValues.TRUE);
             _idealWorldState.SetWorldState(WorldStateVariables.MONITORATKIDPOS, WorldStateVarValues.TRUE);
-            _idealWorldState.SetWorldState(WorldStateVariables.BULLYPUNISHED, WorldStateVarValues.TRUE);
 
             // weights or importance of each world state variable for this agent
-            _worldStateVariableWeights.Add(WorldStateVariables.BULLYSEENBYMONITOR, 5.0f);
-            _worldStateVariableWeights.Add(WorldStateVariables.MONITORATBULLYPOS, 4.0f);
-            _worldStateVariableWeights.Add(WorldStateVariables.KIDSEENBYMONITOR, 2.0f);
-            _worldStateVariableWeights.Add(WorldStateVariables.MONITORATKIDPOS, 1.0f);
-            _worldStateVariableWeights.Add(WorldStateVariables.BULLYPUNISHED, 3.0f);
+            _worldStateVariableWeights.SetWorldStateWeights(WorldStateVariables.BULLYSEENBYMONITOR, 5.0f);
+            _worldStateVariableWeights.SetWorldStateWeights(WorldStateVariables.MONITORATBULLYPOS, 4.0f);
+            _worldStateVariableWeights.SetWorldStateWeights(WorldStateVariables.KIDSEENBYMONITOR, 3.0f);
+            _worldStateVariableWeights.SetWorldStateWeights(WorldStateVariables.MONITORATKIDPOS, 2.0f);
 
             // Setup Monitor BT
             Node root = new Selector(new List<Node>
             {
+                new Inverter(new List<Node>
+                {
+                    new Idle(transform, 2.0f),
+                }),
                 new SmartSelector(new List<Node>
                 {
                     new CheckBullyInMonitorFOVRange(transform),
                     new MonitorRunToBully(transform),
                     new CheckKidInMonitorFOVRange(transform),
                     new MonitorRunToKid(transform),
-                }),
-                new Wait(transform, 5.0f, new List<Node>
-                {
-                    new RunToRandomPos(transform),
                 }),
             });
 

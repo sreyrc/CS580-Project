@@ -8,37 +8,36 @@ public class HUD : MonoBehaviour
 {
     public Text currentWorldStateText;
     public Text agentIdealWorldStateText;
-
-    public GameObject canvas;
-
     public Dropdown agentDropdown;
-
-    public Slider slider;
-
-    int prevDropdownValue = -1;
-
+    // stores sliders for ideal world states
+    //public Slider[] sliders;
     // stores student, monitor and bully Game Objects
     public GameObject[] agents;
 
     private BehaviorTree.Tree[] agentTrees;
-
-    private Slider[] sliderInstances;
+    //private int prevDropdownValue = -1;
+    //private float[] prevSliderValue;
 
     private void Start()
     {
-        //agents = new GameObject [3];
         agentTrees = new BehaviorTree.Tree[3];
-
-        for (int i = 0; i < agents.Length; i++)
+        for (int i = 0; i < agents.Length; ++i)
         {
             agentTrees[i] = agents[i].GetComponent<BehaviorTree.Tree>();
         }
+
+        //prevSliderValue = new float[sliders.Length];
+        //for (int i = 0; i < sliders.Length; ++i)
+        //{
+        //    sliders[i].gameObject.SetActive(false);
+        //    prevSliderValue[i] = -1f;
+        //}
     }
 
     // Update is called once per frame
     void Update()
     {
-        currentWorldStateText.text = "";
+        currentWorldStateText.text = "Current World State\n";
         Dictionary<WorldStateVariables, WorldStateVarValues> worldState =
             BehaviorTree.Tree._currentWorldState.GetWorldStateDS();
 
@@ -47,44 +46,66 @@ public class HUD : MonoBehaviour
             currentWorldStateText.text += entry.Key.ToString() + "\t\t" + entry.Value + "\n";
         }
 
-        if (prevDropdownValue != agentDropdown.value)
+        //if (prevDropdownValue != agentDropdown.value)
+        //{
+        agentIdealWorldStateText.text = "Ideal World State\n";
+        //prevDropdownValue = agentDropdown.value;
+
+        Dictionary<WorldStateVariables, WorldStateVarValues> agentIdealState =
+            agentTrees[agentDropdown.value]._idealWorldState.GetWorldStateDS();
+
+        WorldStateWeights agentWeights =
+            agentTrees[agentDropdown.value]._worldStateVariableWeights;
+
+        //int count = 0;
+        foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in agentIdealState)
         {
-            agentIdealWorldStateText.text = "";
-            prevDropdownValue = agentDropdown.value;
-
-            if (sliderInstances.Length > 0)
+            if (entry.Value != WorldStateVarValues.DONTCARE)
             {
-                for (int i = 0; i < sliderInstances.Length; i++)
-                    Destroy(sliderInstances[i].gameObject);
-            }
-
-            Dictionary<WorldStateVariables, WorldStateVarValues> agentIdealState =
-                agentTrees[agentDropdown.value]._idealWorldState.GetWorldStateDS();
-
-            int relevantStatesCount = 0;
-
-            foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in agentIdealState)
-            {
-                if (entry.Value != WorldStateVarValues.DONTCARE)
-                {
-                    agentIdealWorldStateText.text += entry.Key.ToString() + "\t\t" + entry.Value + "\n";
-                    relevantStatesCount++;
-                }
-            }
-
-            sliderInstances = new Slider[relevantStatesCount];
-
-            int offset = 0;
-
-            for (int i = 0; i < relevantStatesCount; i++)
-            {
-                Slider sliderInstance = Instantiate(slider);
-                sliderInstance.GetComponent<Transform>().SetParent(canvas.GetComponent<Transform>());
-                RectTransform sliderRectTransform = sliderInstance.GetComponent<RectTransform>();
-                sliderRectTransform.anchoredPosition = new Vector2(100, -offset);
-                sliderInstances[i] = sliderInstance;
-                offset += 10;
+                agentIdealWorldStateText.text += entry.Key.ToString() + "\t\t" + entry.Value + "\t\t" + "Weight: " + agentWeights.GetWorldStateWeight(entry.Key).ToString("n2") + "\n";
+                //sliders[count].gameObject.SetActive(true);
+                //sliders[count].value = agentWeights.GetWorldStateWeight(entry.Key);
+                //++count;
             }
         }
+
+        //for (int i = count; i < sliders.Length; ++i)
+        //{
+        //    sliders[i].gameObject.SetActive(false);
+        //}
+
+        //count = 0;
+        //foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in agentIdealState)
+        //{
+        //    //weights[entry.Key] = slider[count].value;
+        //    if (entry.Value != WorldStateVarValues.DONTCARE)
+        //    {
+        //        if (prevSliderValue[count] != sliders[count].value)
+        //        {
+        //            agentTrees[agentDropdown.value]._worldStateVariableWeights.SetWorldStateWeights(entry.Key, sliders[count].value);
+        //        }
+        //        ++count;
+        //    }
+        //}
+        //}
     }
+
+    //public void SetSliders()
+    //{
+    //    Dictionary<WorldStateVariables, WorldStateVarValues> agentIdealState =
+    //        agentTrees[agentDropdown.value]._idealWorldState.GetWorldStateDS();
+
+    //    WorldStateWeights agentWeights =
+    //        agentTrees[agentDropdown.value]._worldStateVariableWeights;
+
+    //    int count = 0;
+    //    foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in agentIdealState)
+    //    {
+    //        if (entry.Value != WorldStateVarValues.DONTCARE)
+    //        {
+    //            sliders[count].value = agentTrees[agentDropdown.value]._worldStateVariableWeights.GetWorldStateWeight(entry.Key);
+    //            ++count;
+    //        }
+    //    }
+    //}
 }

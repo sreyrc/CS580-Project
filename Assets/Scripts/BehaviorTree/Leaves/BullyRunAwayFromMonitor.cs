@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BehaviorTree
 {
-    public class KidRunAwayFromBully : Node
+    public class BullyRunAwayFromMonitor : Node
     {
         private Transform _transform;
         private float _time;
@@ -17,7 +17,7 @@ namespace BehaviorTree
         private float _animationBlend;
         private float SpeedChangeRate = 10.0f;
 
-        public KidRunAwayFromBully(Transform transform)
+        public BullyRunAwayFromMonitor(Transform transform)
         {
             _transform = transform;
             _time = 2f;
@@ -31,8 +31,7 @@ namespace BehaviorTree
         {
             float cost = 0f;
 
-            Tree._currentWorldState.SetWorldState(WorldStateVariables.KIDBEATENUP, WorldStateVarValues.FALSE);
-            Tree._currentWorldState.SetWorldState(WorldStateVariables.BULLYATKIDPOS, WorldStateVarValues.FALSE);
+            Tree._currentWorldState.SetWorldState(WorldStateVariables.MONITORATBULLYPOS, WorldStateVarValues.FALSE);
 
             foreach (KeyValuePair<WorldStateVariables, WorldStateVarValues> entry in idealWorldState.GetWorldStateDS())
             {
@@ -55,27 +54,26 @@ namespace BehaviorTree
 
             if (colliders.Length > 0)
             {
-                Transform bullyTransform = colliders[0].transform;
+                Transform monitorTransform = colliders[0].transform;
 
                 if (_time <= 0f)
                 {
                     _animationBlend = Mathf.Lerp(_animationBlend, StudentBT.runSpeed, Time.deltaTime * SpeedChangeRate);
 
-                    if (bullyTransform != null)
+                    if (monitorTransform != null)
                     {
-                        Vector3 runDirection = (_transform.position - bullyTransform.position).normalized;
+                        Vector3 runDirection = (_transform.position - monitorTransform.position).normalized;
                         Vector3 runTargetPos = _transform.position + 50f * runDirection;
 
                         // Kid is far enough away from bully
-                        if (Vector3.Distance(_transform.position, bullyTransform.position) > 8f)
+                        if (Vector3.Distance(_transform.position, monitorTransform.position) > 8f)
                         {
                             _time = 2f;
 
                             _animator.SetFloat(_animIDSpeed, 0f);
                             _animator.SetFloat(_animIDMotionSpeed, 0f);
 
-                            Tree._currentWorldState.SetWorldState(WorldStateVariables.KIDBEATENUP, WorldStateVarValues.FALSE);
-                            Tree._currentWorldState.SetWorldState(WorldStateVariables.BULLYATKIDPOS, WorldStateVarValues.FALSE);
+                            Tree._currentWorldState.SetWorldState(WorldStateVariables.MONITORATBULLYPOS, WorldStateVarValues.FALSE);
 
                             state = NodeState.SUCCESS;
                             return state;

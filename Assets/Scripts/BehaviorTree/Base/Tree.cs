@@ -13,13 +13,13 @@ namespace BehaviorTree
 
         public WorldState _idealWorldState;
 
-        public Dictionary<WorldStateVariables, float> _worldStateVariableWeights;
+        public WorldStateWeights _worldStateVariableWeights;
 
         protected void Start()
         {
             _currentWorldState  = new WorldState();
             _idealWorldState = new WorldState();
-            _worldStateVariableWeights = new Dictionary<WorldStateVariables, float>();
+            _worldStateVariableWeights = new WorldStateWeights();
             _root = SetupTree();
 
             // Setup Initial world state
@@ -39,9 +39,6 @@ namespace BehaviorTree
         {
             if (_root != null)
             {
-                //if (_root.GetState() != NodeState.RUNNING)
-                //{
-                //}
                 _root.Simulate(_idealWorldState, _worldStateVariableWeights);
                 _root.Evaluate();
             }

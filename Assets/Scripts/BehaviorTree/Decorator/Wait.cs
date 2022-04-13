@@ -28,7 +28,7 @@ namespace BehaviorTree
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
 
-        public override float Simulate(WorldState idealWorldState, Dictionary<WorldStateVariables, float> weights)
+        public override float Simulate(WorldState idealWorldState, WorldStateWeights weights)
         {
             WorldState worldStateCopy = new WorldState(Tree._currentWorldState);
 

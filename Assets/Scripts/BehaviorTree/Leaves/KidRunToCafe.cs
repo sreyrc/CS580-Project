@@ -9,7 +9,7 @@ namespace BehaviorTree
         private Transform _transform;
         private Vector3 _target;
         WorldState _idealWorldState;
-        Dictionary<WorldStateVariables, float> _weights;
+        WorldStateWeights _weights;
 
         // Animation
         private Animator _animator;
@@ -28,7 +28,7 @@ namespace BehaviorTree
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
 
-        public override float Simulate(WorldState idealWorldState, Dictionary<WorldStateVariables, float> weights)
+        public override float Simulate(WorldState idealWorldState, WorldStateWeights weights)
         {
             _idealWorldState = idealWorldState;
             _weights = weights;
@@ -42,7 +42,7 @@ namespace BehaviorTree
                 if (entry.Value != WorldStateVarValues.DONTCARE)
                 {
                     // Diff(currentWorldState[key], idealWorldState[key]) * wt[key] + ..... 
-                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * weights[entry.Key];
+                    cost += Mathf.Abs(entry.Value - Tree._currentWorldState.GetWorldState(entry.Key)) * weights.GetWorldStateWeight(entry.Key);
                 }
             }
 
@@ -74,8 +74,8 @@ namespace BehaviorTree
                 _idealWorldState.SetWorldState(WorldStateVariables.KIDATCAFE, WorldStateVarValues.FALSE);
                 _idealWorldState.SetWorldState(WorldStateVariables.KIDATCLASSROOM, WorldStateVarValues.TRUE);
 
-                _weights[WorldStateVariables.KIDATCAFE] = 1f;
-                _weights[WorldStateVariables.KIDATCLASSROOM] = 2f;
+                _weights.SetWorldStateWeights(WorldStateVariables.KIDATCAFE, 1f);
+                _weights.SetWorldStateWeights(WorldStateVariables.KIDATCLASSROOM, 2f);
 
                 state = NodeState.SUCCESS;
                 return state;
