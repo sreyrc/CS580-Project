@@ -23,6 +23,11 @@ namespace BehaviorTree
             _worldStateVariableWeights.SetWorldStateWeights(WorldStateVariables.KIDSEENBYMONITOR, 3.0f);
             _worldStateVariableWeights.SetWorldStateWeights(WorldStateVariables.MONITORATKIDPOS, 2.0f);
 
+            //_worldStateVariableWeights.SetWorldStateWeights(WorldStateVariables.BULLYSEENBYMONITOR, 3.0f);
+            //_worldStateVariableWeights.SetWorldStateWeights(WorldStateVariables.MONITORATBULLYPOS, 2.0f);
+            //_worldStateVariableWeights.SetWorldStateWeights(WorldStateVariables.KIDSEENBYMONITOR, 5.0f);
+            //_worldStateVariableWeights.SetWorldStateWeights(WorldStateVariables.MONITORATKIDPOS, 4.0f);
+
             // Setup Monitor BT
             Node root = new Selector(new List<Node>
             {
